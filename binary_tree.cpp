@@ -32,16 +32,20 @@ void BTMaze::build() {
             unsigned short value = get(x, y);
             if (y == 0) {
                 if (x < (mWidth - 1)) {
-                    set(x, y, value - E);
+                    set(x, y, value ^ E);
+                    set(x + 1, y, get(x + 1, y) ^ W);
                 }
             } else if (x == mWidth - 1) {
                 if (y > 0) {
-                    set(x, y, value - N);
+                    set(x, y, value ^ N);
+                    set(x, y - 1, get(x, y - 1) ^ S);
                 }
             } else if ((int)(rnd() % 2)) {
-                set(x, y, value - N);
+                set(x, y, value ^ N);
+                set(x, y - 1, get(x, y - 1) ^ S);
             } else {
-                set(x, y, value - E);
+                set(x, y, value ^ E);
+                set(x + 1, y, get(x + 1, y) ^ W);
             }
         }
     }
@@ -53,12 +57,11 @@ void BTMaze::initialize() {
 }
 
 void BTMaze::reset() {
+    unsigned short all = N | S | E | W;
+
     for (unsigned int x = 0; x < mWidth; x++) {
         for (unsigned int y = 0; y < mHeight; y++) {
-            unsigned short value = N + E;
-            if (x == 0) value += W;
-            if (y == (mHeight - 1)) value += S;
-            set(x, y, value);
+            set(x, y, all);
         }
     }
 }

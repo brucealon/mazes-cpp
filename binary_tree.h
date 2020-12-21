@@ -1,26 +1,28 @@
 
-#include <iostream>
-
 class BTMaze {
 private:
-    unsigned int mWidth;
-    unsigned int mHeight;
-    unsigned short *maze;
+    int mWidth;
+    int mHeight;
+    unsigned short *mMaze;
 
 public:
     BTMaze();
-    BTMaze(unsigned int w, unsigned int h);
+    BTMaze(int w, int h);
     ~BTMaze();
+
     void build();
     void reset();
-    unsigned int width();
-    unsigned int height();
-    unsigned short get(unsigned int x, unsigned int y);
-    void set(unsigned int x, unsigned int y, unsigned short value);
-    bool has_north(unsigned int x, unsigned int y);
-    bool has_south(unsigned int x, unsigned int y);
-    bool has_east(unsigned int x, unsigned int y);
-    bool has_west(unsigned int x, unsigned int y);
+
+    int width();
+    int height();
+
+    unsigned short get(int x, int y);
+    void set(int x, int y, unsigned short value);
+
+    bool has_north(int x, int y);
+    bool has_south(int x, int y);
+    bool has_east(int x, int y);
+    bool has_west(int x, int y);
 
 private:
     void initialize();

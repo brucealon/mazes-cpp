@@ -1,9 +1,10 @@
 
 #include <iostream>
 #include "binary_tree.h"
+#include "sidewinder.h"
 #include "SDL2/SDL.h"
 
-void draw_maze_sdl(BTMaze *maze) {
+void draw_maze_sdl(SidewinderMaze *maze) {
     int windowWidth = 800;
     int windowHeight = 800;
     int mazeOffset = 25;
@@ -28,10 +29,10 @@ void draw_maze_sdl(BTMaze *maze) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     int lineLen = (windowWidth - (mazeOffset * 2)) / maze->width();
-    for (unsigned int mx = 0; mx < maze->width(); mx++) {
-        for (unsigned int my = 0; my < maze->height(); my++) {
-            unsigned int x = (mx * lineLen) + mazeOffset;
-            unsigned int y = (my * lineLen) + mazeOffset;
+    for (int mx = 0; mx < maze->width(); mx++) {
+        for (int my = 0; my < maze->height(); my++) {
+            int x = (mx * lineLen) + mazeOffset;
+            int y = (my * lineLen) + mazeOffset;
             if (maze->has_north(mx, my)) {
                 SDL_RenderDrawLine(renderer, x, y, x + lineLen, y);
             }
@@ -62,10 +63,10 @@ void draw_maze_sdl(BTMaze *maze) {
     }
 }
 
-void draw_maze_ascii(BTMaze *maze) {
+void draw_maze_ascii(SidewinderMaze *maze) {
     std::cout << "\n\n";
-    for (unsigned int y = 0; y < maze->height(); y++) {
-        for (unsigned int x = 0; x < maze->width(); x++) {
+    for (int y = 0; y < maze->height(); y++) {
+        for (int x = 0; x < maze->width(); x++) {
             std::cout << maze->get(x, y) << " ";
         }
         std::cout << "\n";
@@ -74,7 +75,7 @@ void draw_maze_ascii(BTMaze *maze) {
 }
 
 int main(int argc, char **argv) {
-    BTMaze maze{30, 30};
+    SidewinderMaze maze{30, 30};
     maze.build();
 
     draw_maze_sdl(&maze);

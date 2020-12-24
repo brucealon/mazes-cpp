@@ -22,7 +22,7 @@ SidewinderMaze::SidewinderMaze(int w, int h) :
 }
 
 SidewinderMaze::~SidewinderMaze() {
-    free(mMaze);
+    delete[] mMaze;
 }
 
 void SidewinderMaze::build() {
@@ -56,7 +56,7 @@ void SidewinderMaze::build() {
 }
 
 void SidewinderMaze::initialize() {
-    mMaze = (unsigned short *)calloc(mWidth * mHeight, sizeof(unsigned short *));
+    mMaze = new unsigned short[mWidth * mHeight];
     reset();
 }
 

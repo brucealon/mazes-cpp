@@ -21,7 +21,7 @@ BTMaze::BTMaze(int w, int h) :
 }
 
 BTMaze::~BTMaze() {
-    free(mMaze);
+    delete[] mMaze;
 }
 
 void BTMaze::build() {
@@ -51,6 +51,7 @@ void BTMaze::build() {
 
 void BTMaze::initialize() {
     mMaze = (unsigned short *)calloc(mWidth * mHeight, sizeof(unsigned short *));
+    mMaze = new unsigned short[mWidth * mHeight];
     reset();
 }
 

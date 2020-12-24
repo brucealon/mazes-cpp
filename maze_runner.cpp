@@ -1,10 +1,11 @@
 
 #include <iostream>
+#include "maze.h"
 #include "binary_tree.h"
 #include "sidewinder.h"
 #include "SDL2/SDL.h"
 
-void draw_maze_sdl(SidewinderMaze *maze) {
+void draw_maze_sdl(Maze *maze) {
     int windowWidth = 800;
     int windowHeight = 800;
     int mazeOffset = 25;
@@ -63,7 +64,7 @@ void draw_maze_sdl(SidewinderMaze *maze) {
     }
 }
 
-void draw_maze_ascii(SidewinderMaze *maze) {
+void draw_maze_ascii(Maze *maze) {
     std::cout << "\n\n";
     for (int y = 0; y < maze->height(); y++) {
         for (int x = 0; x < maze->width(); x++) {

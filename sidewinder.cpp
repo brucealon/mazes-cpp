@@ -4,20 +4,14 @@
 #include <random>
 #include "sidewinder.h"
 
-const unsigned short N = 1;
-const unsigned short S = 2;
-const unsigned short E = 4;
-const unsigned short W = 8;
-
 SidewinderMaze::SidewinderMaze() {
     initialize();
 }
 
-SidewinderMaze::SidewinderMaze(int w, int h) :
-    mWidth(w),
-    mHeight(w),
-    mMaze(nullptr)
-{
+SidewinderMaze::SidewinderMaze(int w, int h) {
+    mWidth = w;
+    mHeight = h;
+    mMaze = nullptr;
     initialize();
 }
 
@@ -53,51 +47,4 @@ void SidewinderMaze::build() {
             }
         }
     }
-}
-
-void SidewinderMaze::initialize() {
-    mMaze = new unsigned short[mWidth * mHeight];
-    reset();
-}
-
-void SidewinderMaze::reset() {
-    unsigned short all = N | S | E | W;
-
-    for (int x = 0; x < mWidth; x++) {
-        for (int y = 0; y < mHeight; y++) {
-            set(x, y, all);
-        }
-    }
-}
-
-int SidewinderMaze::width() {
-    return mWidth;
-}
-
-int SidewinderMaze::height() {
-    return mHeight;
-}
-
-unsigned short SidewinderMaze::get(int x, int y) {
-    return mMaze[(x * mWidth) + y];
-}
-
-void SidewinderMaze::set(int x, int y, unsigned short value) {
-    mMaze[(x * mWidth) + y] = value;
-}
-
-bool SidewinderMaze::has_north(int x, int y) {
-    return get(x, y) & N;
-}
-
-bool SidewinderMaze::has_south(int x, int y) {
-    return get(x, y) & S;
-}
-
-bool SidewinderMaze::has_east(int x, int y) {
-    return get(x, y) & E;
-}
-
-bool SidewinderMaze::has_west(int x, int y) {
-    return get(x, y) & W;
 }

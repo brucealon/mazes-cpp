@@ -1,29 +1,12 @@
 
-class BTMaze {
-private:
-    int mWidth;
-    int mHeight;
-    unsigned short *mMaze;
+#pragma once
 
+#include "maze.h"
+
+class BTMaze : public Maze {
 public:
     BTMaze();
-    BTMaze(int w, int h);
+    BTMaze(int x, int y);
     ~BTMaze();
-
     void build();
-    void reset();
-
-    int width();
-    int height();
-
-    unsigned short get(int x, int y);
-    void set(int x, int y, unsigned short value);
-
-    bool has_north(int x, int y);
-    bool has_south(int x, int y);
-    bool has_east(int x, int y);
-    bool has_west(int x, int y);
-
-private:
-    void initialize();
 };

@@ -47,8 +47,10 @@ void draw_maze_sdl(Maze *maze) {
                 SDL_RenderDrawLine(renderer, x, y, x, y + lineLen);
             }
             if (maze->visited(mx, my)) {
-                SDL_Rect visited {x + (lineLen / 2), y + (lineLen / 2), 5, 5};
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                SDL_Rect visited {x + (lineLen / 2) - 2, y + (lineLen / 2) - 2, 4, 4};
                 SDL_RenderFillRect(renderer, &visited);
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             }
         }
     }
@@ -73,43 +75,35 @@ void run_tests() {
 
     maze.reset();
     build_bt_maze(&maze);
-    if (maze.is_valid()) {
-        std::cout << "Binary tree maze is valid.\n";
-    } else {
+    if (!maze.is_valid()) {
         std::cout << "Binary tree maze is NOT valid.\n";
     }
 
-    maze.set(5, 5, 15);
+    maze.block_cell(5, 5);
     if (maze.is_valid()) {
         std::cout << "Binary tree maze should not be valid but is: " << maze.get(5, 5) << ".\n";
         std::cout << "Visited: " << maze.visited(5, 5) << ".\n";
-        draw_maze_sdl(&maze);
-        exit(1);
-    } else {
-        std::cout << "Binary tree maze is correctly invalid.\n";
     }
 
     maze.reset();
     build_sidewinder_maze(&maze);
-    if (maze.is_valid()) {
-        std::cout << "Sidewinder maze is valid.\n";
-    } else {
+    if (!maze.is_valid()) {
         std::cout << "Sidewinder maze is NOT valid.\n";
     }
 
-    maze.set(5, 5, 15);
+    maze.block_cell(5, 5);
     if (maze.is_valid()) {
         std::cout << "Sidewinder maze should not be valid but is: " << maze.get(5, 5) << ".\n";
         std::cout << "Visited: " << maze.visited(5, 5) << ".\n";
-        draw_maze_sdl(&maze);
-        exit(1);
-    } else {
-        std::cout << "Sidewinder maze is correctly invalid.\n";
     }
 }
 
 int main(int argc, char **argv) {
-    run_tests();
+    for (int x = 0; x < 100; x++) {
+        std::cout << ".";
+        run_tests();
+    }
+    std::cout << "\n";
 
     Maze maze{30, 30};
     build_bt_maze(&maze);

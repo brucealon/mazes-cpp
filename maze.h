@@ -14,7 +14,6 @@ private:
     unsigned short *mMaze;
 
     void initialize();
-
     void clear_visited();
 
 public:
@@ -23,6 +22,7 @@ public:
     ~Maze();
 
     void reset();
+    void traverse();
     bool is_valid();
 
     int width();
@@ -30,6 +30,7 @@ public:
 
     unsigned short get(int x, int y);
     void set(int x, int y, unsigned short value);
+    void block_cell(int x, int y);
 
     void add_path_north(int x, int y);
     void add_path_south(int x, int y);

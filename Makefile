@@ -5,8 +5,8 @@ CFLAGS = -std=c++11 -g -Wall $(shell sdl2-config --libs)
 .cpp.o:
 	${CC} ${CFLAGS} -c -o $@ $<
 
-maze_runner: maze_runner.cpp maze.o binary_tree.o sidewinder.o traverser.o
-	${CC} ${CFLAGS} -o maze_runner maze_runner.cpp maze.o binary_tree.o sidewinder.o traverser.o
+maze_runner: maze_runner.cpp maze.o binary_tree.o sidewinder.o
+	${CC} ${CFLAGS} -o maze_runner maze_runner.cpp maze.o binary_tree.o sidewinder.o
 
 clean:
 	rm -f maze_runner

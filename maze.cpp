@@ -27,13 +27,13 @@ cell turn_right(cell loc) {
 }
 
 bool can_move(Maze *maze, cell loc) {
-    if (loc.facing == FaceE && maze->has_east_door(loc.x, loc.y) && !maze->visited(loc.x + 1, loc.y)) {
+    if (loc.facing == FaceE && maze->can_go_east(loc.x, loc.y) && !maze->visited(loc.x + 1, loc.y)) {
         return true;
-    } else if (loc.facing == FaceW && maze->has_west_door(loc.x, loc.y) && !maze->visited(loc.x - 1, loc.y)) {
+    } else if (loc.facing == FaceW && maze->can_go_west(loc.x, loc.y) && !maze->visited(loc.x - 1, loc.y)) {
         return true;
-    } else if (loc.facing == FaceS && maze->has_south_door(loc.x, loc.y) && !maze->visited(loc.x, loc.y + 1)) {
+    } else if (loc.facing == FaceS && maze->can_go_south(loc.x, loc.y) && !maze->visited(loc.x, loc.y + 1)) {
         return true;
-    } else if (loc.facing == FaceN && maze->has_north_door(loc.x, loc.y) && !maze->visited(loc.x, loc.y - 1)) {
+    } else if (loc.facing == FaceN && maze->can_go_north(loc.x, loc.y) && !maze->visited(loc.x, loc.y - 1)) {
         return true;
     }
 
@@ -210,19 +210,19 @@ bool Maze::has_west_wall(int x, int y) {
     return get(x, y) & W;
 }
 
-bool Maze::has_north_door(int x, int y) {
+bool Maze::can_go_north(int x, int y) {
     return !has_north_wall(x, y);
 }
 
-bool Maze::has_south_door(int x, int y) {
+bool Maze::can_go_south(int x, int y) {
     return !has_south_wall(x, y);
 }
 
-bool Maze::has_east_door(int x, int y) {
+bool Maze::can_go_east(int x, int y) {
     return !has_east_wall(x, y);
 }
 
-bool Maze::has_west_door(int x, int y) {
+bool Maze::can_go_west(int x, int y) {
     return !has_west_wall(x, y);
 }
 

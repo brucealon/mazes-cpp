@@ -42,10 +42,10 @@ public:
     bool has_east_wall(int x, int y);
     bool has_west_wall(int x, int y);
 
-    bool has_north_door(int x, int y);
-    bool has_south_door(int x, int y);
-    bool has_east_door(int x, int y);
-    bool has_west_door(int x, int y);
+    bool can_go_north(int x, int y);
+    bool can_go_south(int x, int y);
+    bool can_go_east(int x, int y);
+    bool can_go_west(int x, int y);
 
     void visit(int x, int y);
     bool visited(int x, int y);

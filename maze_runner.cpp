@@ -34,17 +34,21 @@ void draw_maze_sdl(Maze *maze) {
         for (int my = 0; my < maze->height(); my++) {
             int x = (mx * lineLen) + mazeOffset;
             int y = (my * lineLen) + mazeOffset;
-            if (maze->has_north(mx, my)) {
+            if (maze->has_north_wall(mx, my)) {
                 SDL_RenderDrawLine(renderer, x, y, x + lineLen, y);
             }
-            if (maze->has_south(mx, my)) {
+            if (maze->has_south_wall(mx, my)) {
                 SDL_RenderDrawLine(renderer, x, y + lineLen, x + lineLen, y + lineLen);
             }
-            if (maze->has_east(mx, my)) {
+            if (maze->has_east_wall(mx, my)) {
                 SDL_RenderDrawLine(renderer, x + lineLen, y, x + lineLen, y + lineLen);
             }
-            if (maze->has_west(mx, my)) {
+            if (maze->has_west_wall(mx, my)) {
                 SDL_RenderDrawLine(renderer, x, y, x, y + lineLen);
+            }
+            if (maze->visited(mx, my)) {
+                SDL_Rect visited {x + (lineLen / 2), y + (lineLen / 2), 5, 5};
+                SDL_RenderFillRect(renderer, &visited);
             }
         }
     }
@@ -64,23 +68,52 @@ void draw_maze_sdl(Maze *maze) {
     }
 }
 
-void draw_maze_ascii(Maze *maze) {
-    std::cout << "\n\n";
-    for (int y = 0; y < maze->height(); y++) {
-        for (int x = 0; x < maze->width(); x++) {
-            std::cout << maze->get(x, y) << " ";
-        }
-        std::cout << "\n";
+void run_tests() {
+    Maze maze{30, 30};
+
+    maze.reset();
+    build_bt_maze(&maze);
+    if (maze.is_valid()) {
+        std::cout << "Binary tree maze is valid.\n";
+    } else {
+        std::cout << "Binary tree maze is NOT valid.\n";
     }
-    std::cout << "\n\n";
+
+    maze.set(5, 5, 15);
+    if (maze.is_valid()) {
+        std::cout << "Binary tree maze should not be valid but is: " << maze.get(5, 5) << ".\n";
+        std::cout << "Visited: " << maze.visited(5, 5) << ".\n";
+        draw_maze_sdl(&maze);
+        exit(1);
+    } else {
+        std::cout << "Binary tree maze is correctly invalid.\n";
+    }
+
+    maze.reset();
+    build_sidewinder_maze(&maze);
+    if (maze.is_valid()) {
+        std::cout << "Sidewinder maze is valid.\n";
+    } else {
+        std::cout << "Sidewinder maze is NOT valid.\n";
+    }
+
+    maze.set(5, 5, 15);
+    if (maze.is_valid()) {
+        std::cout << "Sidewinder maze should not be valid but is: " << maze.get(5, 5) << ".\n";
+        std::cout << "Visited: " << maze.visited(5, 5) << ".\n";
+        draw_maze_sdl(&maze);
+        exit(1);
+    } else {
+        std::cout << "Sidewinder maze is correctly invalid.\n";
+    }
 }
 
 int main(int argc, char **argv) {
-    SidewinderMaze maze{30, 30};
-    maze.build();
+    run_tests();
 
+    Maze maze{30, 30};
+    build_bt_maze(&maze);
     draw_maze_sdl(&maze);
-    draw_maze_ascii(&maze);
 
     return 0;
 }

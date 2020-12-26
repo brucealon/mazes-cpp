@@ -3,10 +3,4 @@
 
 #include "maze.h"
 
-class BTMaze : public Maze {
-public:
-    BTMaze();
-    BTMaze(int x, int y);
-    ~BTMaze();
-    void build();
-};
+void build_bt_maze(Maze *maze);

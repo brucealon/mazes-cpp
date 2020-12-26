@@ -3,10 +3,4 @@
 
 #include "maze.h"
 
-class SidewinderMaze : public Maze {
-public:
-    SidewinderMaze();
-    SidewinderMaze(int x, int y);
-    ~SidewinderMaze();
-    void build();
-};
+void build_sidewinder_maze(Maze *maze);

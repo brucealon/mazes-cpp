@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <iostream>
+
 class Maze {
 private:
     const unsigned short N       = 1;
@@ -50,3 +52,5 @@ public:
     void visit(int x, int y);
     bool visited(int x, int y);
 };
+
+std::ostream& operator<<(std::ostream& os, Maze& maze);

@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
 
     Maze maze{30, 30};
     build_bt_maze(&maze);
-    draw_maze_sdl(&maze);
+    std::cout << maze << "\n";
 
     return 0;
 }

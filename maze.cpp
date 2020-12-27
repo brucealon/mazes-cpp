@@ -233,3 +233,27 @@ void Maze::visit(int x, int y) {
 bool Maze::visited(int x, int y) {
     return get(x, y) & Visited;
 }
+
+std::ostream& operator<<(std::ostream& os, Maze& maze) {
+    os << "+";
+    for (int x = 0; x < maze.width(); x++) {
+        os << "---+";
+    }
+    os << "\n";
+
+    for (int y = 0; y < maze.height(); y++) {
+        os << "|";
+        for (int x = 0; x < maze.width(); x++) {
+            os << " " << (maze.visited(x, y) ? "." : " ") << " ";
+            os << (maze.can_go_east(x, y) ? " " : "|");
+        }
+        os << "\n+";
+        for (int x = 0; x < maze.width(); x++) {
+            os << (maze.can_go_south(x, y) ? "   " : "---") << "+";
+        }
+        os << "\n";
+    }
+
+    return os;
+}
+

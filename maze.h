@@ -18,6 +18,8 @@ private:
     void initialize();
     void clear_visited();
 
+    unsigned short get(int x, int y);
+    void set(int x, int y, unsigned short value);
 public:
     Maze();
     Maze(int w, int h);
@@ -30,8 +32,6 @@ public:
     int width();
     int height();
 
-    unsigned short get(int x, int y);
-    void set(int x, int y, unsigned short value);
     void block_cell(int x, int y);
 
     void add_path_north(int x, int y);

@@ -76,25 +76,24 @@ void run_tests() {
     maze.reset();
     build_bt_maze(&maze);
     if (!maze.is_valid()) {
-        std::cout << "Binary tree maze is NOT valid.\n";
+        std::cout << "Binary tree maze is NOT valid.\n" << maze;
     }
 
     maze.block_cell(5, 5);
     if (maze.is_valid()) {
-        std::cout << "Binary tree maze should not be valid but is: " << maze.get(5, 5) << ".\n";
-        std::cout << "Visited: " << maze.visited(5, 5) << ".\n";
+        std::cout << "Binary tree maze should not be valid but is.\n" << maze;
     }
 
     maze.reset();
     build_sidewinder_maze(&maze);
     if (!maze.is_valid()) {
-        std::cout << "Sidewinder maze is NOT valid.\n";
+        std::cout << "Sidewinder maze is NOT valid.\n" << maze;
     }
 
     maze.block_cell(5, 5);
     if (maze.is_valid()) {
-        std::cout << "Sidewinder maze should not be valid but is: " << maze.get(5, 5) << ".\n";
-        std::cout << "Visited: " << maze.visited(5, 5) << ".\n";
+        std::cout << "Sidewinder maze should not be valid but is.\n" << maze;
+        std::cout << "Visited: " << maze.visited(5, 5) << ".\n" << maze;
     }
 }
 

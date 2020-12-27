@@ -6,13 +6,13 @@ const unsigned short FaceS       = 2;
 const unsigned short FaceE       = 4;
 const unsigned short FaceW       = 8;
 
-struct cell {
+struct tcell {
     int x;
     int y;
     unsigned short facing;
 };
 
-cell turn_right(cell loc) {
+tcell turn_right(tcell loc) {
     if (loc.facing == FaceN) {
         loc.facing = FaceE;
     } else if (loc.facing == FaceE) {
@@ -26,7 +26,7 @@ cell turn_right(cell loc) {
     return loc;
 }
 
-bool can_move(Maze *maze, cell loc) {
+bool can_move(Maze *maze, tcell loc) {
     if (loc.facing == FaceE && maze->can_go_east(loc.x, loc.y) && !maze->visited(loc.x + 1, loc.y)) {
         return true;
     } else if (loc.facing == FaceW && maze->can_go_west(loc.x, loc.y) && !maze->visited(loc.x - 1, loc.y)) {
@@ -40,7 +40,7 @@ bool can_move(Maze *maze, cell loc) {
     return false;
 }
 
-cell move(cell loc) {
+tcell move(tcell loc) {
     if (loc.facing == FaceE) {
         loc.x++;
     } else if (loc.facing == FaceW) {
@@ -54,10 +54,10 @@ cell move(cell loc) {
     return loc;
 }
 
-void traverse_r(Maze *maze, cell loc) {
+void traverse_r(Maze *maze, tcell loc) {
     maze->visit(loc.x, loc.y);
 
-    cell r_loc = turn_right(loc);
+    tcell r_loc = turn_right(loc);
     if (can_move(maze, r_loc)) {
         traverse_r(maze, move(r_loc));
     }
@@ -104,7 +104,7 @@ void Maze::clear_visited() {
 }
 
 void Maze::traverse() {
-    traverse_r(this, cell{0, 0, E});
+    traverse_r(this, tcell{0, 0, E});
 }
 
 bool Maze::is_valid() {
@@ -235,21 +235,28 @@ bool Maze::visited(int x, int y) {
 }
 
 std::ostream& operator<<(std::ostream& os, Maze& maze) {
-    os << "+";
+    os << "\u250C";
     for (int x = 0; x < maze.width(); x++) {
-        os << "---+";
+        os << "\u2500\u2500\u2500";
+        os << (x == (maze.width() - 1) ? "\u2510" : "\u252C");
     }
     os << "\n";
 
     for (int y = 0; y < maze.height(); y++) {
-        os << "|";
+        os << "\u2502";
         for (int x = 0; x < maze.width(); x++) {
-            os << " " << (maze.visited(x, y) ? "." : " ") << " ";
-            os << (maze.can_go_east(x, y) ? " " : "|");
+            os << " " << (maze.visited(x, y) ? "\u22C6" : " ") << " ";
+            os << (maze.can_go_east(x, y) ? " " : "\u2502");
         }
-        os << "\n+";
+        os << "\n";
+        os << (y == (maze.height() - 1) ? "\u2514" : "\u251C");
         for (int x = 0; x < maze.width(); x++) {
-            os << (maze.can_go_south(x, y) ? "   " : "---") << "+";
+            os << (maze.can_go_south(x, y) ? "   " : "\u2500\u2500\u2500");
+            if (y == (maze.height() - 1)) {
+                os << (x == (maze.width() - 1) ? "\u2518" : "\u2534");
+            } else {
+                os << (x == (maze.width() - 1) ? "\u2524" : "\u253C");
+            }
         }
         os << "\n";
     }

@@ -98,15 +98,16 @@ void run_tests() {
 }
 
 int main(int argc, char **argv) {
+    std::cout << "Testing: ";
     for (int x = 0; x < 100; x++) {
         std::cout << ".";
         run_tests();
     }
     std::cout << "\n";
 
-    Maze maze{30, 30};
-    build_bt_maze(&maze);
-    std::cout << maze << "\n";
+    Maze maze{20, 20};
+    build_sidewinder_maze(&maze);
+    draw_maze_sdl(&maze);
 
     return 0;
 }

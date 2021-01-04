@@ -3,6 +3,7 @@
 #include "maze.h"
 #include "binary_tree.h"
 #include "sidewinder.h"
+#include "dijkstra.h"
 #include "SDL2/SDL.h"
 
 void draw_maze_sdl(Maze *maze) {
@@ -107,7 +108,12 @@ int main(int argc, char **argv) {
 
     Maze maze{20, 20};
     build_sidewinder_maze(&maze);
-    draw_maze_sdl(&maze);
+    DijkstraMaze dMaze{&maze};
+    dMaze.calculate(0, 0);
+    std::cout << dMaze;
+    std::cout << "Distance to 15, 15 = " << dMaze.distance(15, 15) << "\n";
+    CellDistance farthest = dMaze.farthest();
+    std::cout << "Farthest is " << farthest.distance << " at " << farthest.x << "," << farthest.y << "\n";
 
     return 0;
 }

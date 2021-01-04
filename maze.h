@@ -20,6 +20,7 @@ private:
 
     unsigned short get(int x, int y);
     void set(int x, int y, unsigned short value);
+
 public:
     Maze();
     Maze(int w, int h);

@@ -88,34 +88,51 @@ Maze::Maze(int w, int h) {
 
 Maze::~Maze() {
     delete[] mMaze;
+    delete[] mVisited;
 }
 
 void Maze::initialize() {
-    mMaze = new unsigned short[mWidth * mHeight];
+    mMaze = new Cell[mWidth * mHeight];
+    int cells = mWidth * mHeight;
+    for (int i = 0; i < cells; i++) {
+        mMaze[i] = Cell{};
+    }
     reset();
+    mVisited = new bool[mWidth * mHeight];
+    for (int i = 0; i < cells; i++) {
+        mVisited[i] = false;
+    }
+}
+
+void Maze::reset() {
+    for (int x = 0; x < mWidth; x++) {
+        for (int y = 0; y < mHeight; y++) {
+            block_cell(x, y);
+        }
+    }
 }
 
 void Maze::clear_visited() {
     for (int x = 0; x < mWidth; x++) {
         for (int y = 0; y < mHeight; y++) {
-            set(x, y, get(x, y) & ~Visited);
+            unvisit(x, y);
         }
     }
 }
 
 void Maze::traverse() {
-    traverse_r(this, tcell{0, 0, E});
+    traverse_r(this, tcell{0, 0, FaceE});
 }
 
 bool Maze::is_valid() {
     for (int y = 0; y < mHeight; y++) {
-        if (!(get(0, y) & W)) return false;
-        if (!(get(mWidth - 1, y) & E)) return false;
+        if (get(0, y)->can_go_west()) return false;
+        if (get(mWidth - 1, y)->can_go_east()) return false;
     }
 
     for (int x = 0; x < mWidth; x++) {
-        if (!(get(x, 0) & N)) return false;
-        if (!(get(x, mHeight - 1) & S)) return false;
+        if (get(x, 0)->can_go_north()) return false;
+        if (get(x, mHeight -1)->can_go_south()) return false;
     }
 
     clear_visited();
@@ -132,16 +149,6 @@ bool Maze::is_valid() {
     return true;
 }
 
-void Maze::reset() {
-    unsigned short all = N | S | E | W;
-
-    for (int x = 0; x < mWidth; x++) {
-        for (int y = 0; y < mHeight; y++) {
-            set(x, y, all);
-        }
-    }
-}
-
 int Maze::width() {
     return mWidth;
 }
@@ -150,88 +157,91 @@ int Maze::height() {
     return mHeight;
 }
 
-unsigned short Maze::get(int x, int y) {
-    return mMaze[(x * mWidth) + y];
+Cell *Maze::get(int x, int y) {
+    return &(mMaze[(x * mWidth) + y]);
 }
 
-void Maze::set(int x, int y, unsigned short value) {
-    mMaze[(x * mWidth) + y] = value;
+void Maze::set(int x, int y, Cell cell) {
+    mMaze[(x * mWidth) + y] = cell;
 }
 
 void Maze::block_cell(int x, int y) {
-    set(x, y, 15);
-    set(x - 1, y, get(x - 1, y) | E);
-    set(x + 1, y, get(x + 1, y) | W);
-    set(x, y - 1, get(x, y - 1) | S);
-    set(x, y + 1, get(x, y + 1) | N);
+    block_cell(get(x, y));
+}
+
+void Maze::block_cell(Cell *cell) {
+    cell->disconnect_north();
+    cell->disconnect_south();
+    cell->disconnect_east();
+    cell->disconnect_west();
 }
 
 void Maze::add_path_north(int x, int y) {
     if (y > 0) {
-        set(x, y, get(x, y) & ~N);
-        set(x, y - 1, get(x, y - 1) & ~S);
+        get(x, y)->connect_north(get(x, y - 1));
     }
 }
 
 void Maze::add_path_south(int x, int y) {
     if (y < (mHeight - 1)) {
-        set(x, y, get(x, y) & ~S);
-        set(x, y + 1, get(x, y + 1) & ~N);
+        get(x, y)->connect_south(get(x, y + 1));
     }
 }
 
 void Maze::add_path_east(int x, int y) {
     if (x < (mWidth - 1)) {
-        set(x, y, get(x, y) & ~E);
-        set(x + 1, y, get(x + 1, y) & ~W);
+        get(x, y)->connect_east(get(x + 1, y));
     }
 }
 
 void Maze::add_path_west(int x, int y) {
     if (x > 0) {
-        set(x, y, get(x, y) & ~W);
-        set(x - 1, y, get(x - 1, y) & ~E);
+        get(x, y)->connect_west(get(x - 1, y));
     }
 }
 
 bool Maze::has_north_wall(int x, int y) {
-    return get(x, y) & N;
+    return !can_go_north(x, y);
 }
 
 bool Maze::has_south_wall(int x, int y) {
-    return get(x, y) & S;
+    return !can_go_south(x, y);
 }
 
 bool Maze::has_east_wall(int x, int y) {
-    return get(x, y) & E;
+    return !can_go_east(x, y);
 }
 
 bool Maze::has_west_wall(int x, int y) {
-    return get(x, y) & W;
+    return !can_go_west(x, y);
 }
 
 bool Maze::can_go_north(int x, int y) {
-    return !has_north_wall(x, y);
+    return get(x, y)->can_go_north();
 }
 
 bool Maze::can_go_south(int x, int y) {
-    return !has_south_wall(x, y);
+    return get(x, y)->can_go_south();
 }
 
 bool Maze::can_go_east(int x, int y) {
-    return !has_east_wall(x, y);
+    return get(x, y)->can_go_east();
 }
 
 bool Maze::can_go_west(int x, int y) {
-    return !has_west_wall(x, y);
+    return get(x, y)->can_go_west();
 }
 
 void Maze::visit(int x, int y) {
-    set(x, y, get(x, y) | Visited);
+    mVisited[(x * mWidth) + y] = true;
+}
+
+void Maze::unvisit(int x, int y) {
+    mVisited[(x * mWidth) + y] = false;
 }
 
 bool Maze::visited(int x, int y) {
-    return get(x, y) & Visited;
+    return mVisited[(x * mWidth) + y];
 }
 
 std::ostream& operator<<(std::ostream& os, Maze& maze) {

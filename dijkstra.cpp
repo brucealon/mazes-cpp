@@ -9,9 +9,7 @@ DijkstraMaze::DijkstraMaze(Maze *maze) {
     mHeight = mMaze->height();
     mDistances = new int[mWidth * mHeight];
 
-    for (int i = 0; i < (mWidth * mHeight); i++) {
-        mDistances[i] = -1;
-    }
+    reset();
 }
 
 DijkstraMaze::~DijkstraMaze() {
@@ -21,6 +19,12 @@ DijkstraMaze::~DijkstraMaze() {
 
 Maze *DijkstraMaze::maze() {
     return mMaze;
+}
+
+void DijkstraMaze::reset() {
+    for (int i = 0; i < (mWidth * mHeight); i++) {
+        mDistances[i] = -1;
+    }
 }
 
 int DijkstraMaze::get(int x, int y) {
@@ -55,21 +59,46 @@ int DijkstraMaze::distance(int x, int y) {
     return get(x, y);
 }
 
+CellLocation DijkstraMaze::origin() {
+    CellLocation retval{0, 0};
+
+    for (int x = 0; x < mWidth; x++) {
+        for (int y = 0; y < mHeight; y++) {
+            if (get(x, y) == 0) {
+                retval.x = x;
+                retval.y = y;
+            }
+        }
+    }
+
+    return retval;
+}
+
 CellDistance DijkstraMaze::farthest() {
-    CellDistance retval;
+    CellDistance retval{0, 0, 0, 0, 0};
 
     for (int x = 0; x < mWidth; x++) {
         for (int y = 0; y < mHeight; y++) {
             int distance = get(x, y);
-            if (distance > retval.distance) {
-                retval.x = x;
-                retval.y = y;
+            if (distance == 0) {
+                retval.xStart = x;
+                retval.yStart = y;
+            } else if (distance > retval.distance) {
+                retval.xEnd = x;
+                retval.yEnd = y;
                 retval.distance = distance;
             }
         }
     }
 
     return retval;
+}
+
+void DijkstraMaze::longest_path() {
+    calculate(0, 0);
+    CellDistance cd = farthest();
+    reset();
+    calculate(cd.xEnd, cd.yEnd);
 }
 
 std::ostream& operator<<(std::ostream& os, DijkstraMaze& dMaze) {

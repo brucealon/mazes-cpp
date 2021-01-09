@@ -2,24 +2,22 @@
 #pragma once
 
 #include <iostream>
+#include "cell.h"
 
 class Maze {
 private:
-    const unsigned short N       = 1;
-    const unsigned short S       = 2;
-    const unsigned short E       = 4;
-    const unsigned short W       = 8;
-    const unsigned short Visited = 16;
-
     int mWidth;
     int mHeight;
-    unsigned short *mMaze;
+    Cell *mMaze;
+    bool *mVisited;
 
     void initialize();
     void clear_visited();
 
-    unsigned short get(int x, int y);
-    void set(int x, int y, unsigned short value);
+    Cell *get(int x, int y);
+    void set(int x, int y, Cell cell);
+
+    void block_cell(Cell *cell);
 
 public:
     Maze();
@@ -51,6 +49,7 @@ public:
     bool can_go_west(int x, int y);
 
     void visit(int x, int y);
+    void unvisit(int x, int y);
     bool visited(int x, int y);
 };
 

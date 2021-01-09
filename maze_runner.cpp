@@ -107,13 +107,16 @@ int main(int argc, char **argv) {
     std::cout << "\n";
 
     Maze maze{20, 20};
-    build_sidewinder_maze(&maze);
+    build_bt_maze(&maze);
     DijkstraMaze dMaze{&maze};
-    dMaze.calculate(0, 0);
+    dMaze.longest_path();
+    std::cout << maze;
+    CellLocation origin = dMaze.origin();
+    std::cout << "New Origin: " << origin.x << "," << origin.y << "\n";
+    std::cout << "Distance to 0, 0 = " << dMaze.distance(0, 0) << "\n";
+    CellDistance f = dMaze.farthest();
+    std::printf("Farthest is %d from %d,%d to %d,%d\n", f.distance, f.xStart, f.yStart, f.xEnd, f.yEnd);
     std::cout << dMaze;
-    std::cout << "Distance to 15, 15 = " << dMaze.distance(15, 15) << "\n";
-    CellDistance farthest = dMaze.farthest();
-    std::cout << "Farthest is " << farthest.distance << " at " << farthest.x << "," << farthest.y << "\n";
 
     return 0;
 }

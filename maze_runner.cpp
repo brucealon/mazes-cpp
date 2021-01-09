@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include "maze.h"
+#include "aldous_broder.h"
 #include "binary_tree.h"
 #include "sidewinder.h"
 #include "dijkstra.h"
@@ -71,52 +72,43 @@ void draw_maze_sdl(Maze *maze) {
     }
 }
 
-void run_tests() {
+void run_test(std::string name, void (*builder)(Maze *)) {
     Maze maze{30, 30};
+    builder(&maze);
 
-    maze.reset();
-    build_bt_maze(&maze);
     if (!maze.is_valid()) {
-        std::cout << "Binary tree maze is NOT valid.\n" << maze;
+        std::cout << name << " maze is NOT valid.\n" << maze;
     }
-
     maze.block_cell(5, 5);
     if (maze.is_valid()) {
-        std::cout << "Binary tree maze should not be valid but is.\n" << maze;
-    }
-
-    maze.reset();
-    build_sidewinder_maze(&maze);
-    if (!maze.is_valid()) {
-        std::cout << "Sidewinder maze is NOT valid.\n" << maze;
-    }
-
-    maze.block_cell(5, 5);
-    if (maze.is_valid()) {
-        std::cout << "Sidewinder maze should not be valid but is.\n" << maze;
-        std::cout << "Visited: " << maze.visited(5, 5) << ".\n" << maze;
+        std::cout << name << " maze should not be valid but is.\n" << maze;
     }
 }
 
-int main(int argc, char **argv) {
-    std::cout << "Testing: ";
-    for (int x = 0; x < 100; x++) {
-        std::cout << ".";
-        run_tests();
+void run_tests() {
+    int count = 100;
+    std::cout << "Testing " << count << " iterations of each builder.\n";
+
+    for (int x = 0; x < count; x++) {
+        run_test("Binary tree",   build_bt_maze);
+        run_test("Sidewinder",    build_sidewinder_maze);
+        run_test("Aldous-Broder", build_aldousbroder_maze);
     }
-    std::cout << "\n";
+    std::cout << "Testing complete.\n";
+}
+
+int main(int argc, char **argv) {
+    run_tests();
 
     Maze maze{20, 20};
-    build_bt_maze(&maze);
+    build_aldousbroder_maze(&maze);
     DijkstraMaze dMaze{&maze};
     dMaze.longest_path();
     std::cout << maze;
-    CellLocation origin = dMaze.origin();
-    std::cout << "New Origin: " << origin.x << "," << origin.y << "\n";
-    std::cout << "Distance to 0, 0 = " << dMaze.distance(0, 0) << "\n";
     CellDistance f = dMaze.farthest();
-    std::printf("Farthest is %d from %d,%d to %d,%d\n", f.distance, f.xStart, f.yStart, f.xEnd, f.yEnd);
-    std::cout << dMaze;
+    std::cout << "New Origin: " << f.xStart << "," << f.yStart << "\n";
+    std::cout << "Distance to 0, 0 = " << dMaze.distance(0, 0) << "\n";
+    std::printf("Farthest is %d to %d,%d\n", f.distance, f.xEnd, f.yEnd);
 
     return 0;
 }

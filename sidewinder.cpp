@@ -1,6 +1,4 @@
 
-#include <cstdio>
-#include <iostream>
 #include <random>
 #include "sidewinder.h"
 

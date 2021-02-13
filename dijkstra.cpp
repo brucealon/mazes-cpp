@@ -3,17 +3,18 @@
 
 #include "dijkstra.h"
 
-DijkstraMaze::DijkstraMaze(Maze *maze) {
-    mMaze = maze;
-    mWidth = mMaze->width();
-    mHeight = mMaze->height();
-    mDistances = new int[mWidth * mHeight];
-
+DijkstraMaze::DijkstraMaze(Maze *maze) :
+    mMaze{ maze },
+    mRows{ maze->rows() },
+    mColumns{ maze->columns() },
+    mFarthestRow{ -1 },
+    mFarthestColumn{ -1 }
+{
     reset();
 }
 
 DijkstraMaze::~DijkstraMaze() {
-    delete[] mDistances;
+    mDistances.clear();
     mMaze = nullptr;
 }
 
@@ -22,108 +23,107 @@ Maze *DijkstraMaze::maze() {
 }
 
 void DijkstraMaze::reset() {
-    for (int i = 0; i < (mWidth * mHeight); i++) {
-        mDistances[i] = -1;
+    mDistances.clear();
+    for (auto rowp = mMaze->begin(); rowp < mMaze->end(); rowp++) {
+        for (auto cellp = rowp->begin(); cellp < rowp->end(); cellp++) {
+            mDistances[&(*cellp)] = -1;
+        }
     }
+    mFarthestRow = -1;
+    mFarthestColumn = -1;
 }
 
-int DijkstraMaze::get(int x, int y) {
-    return mDistances[(x * mWidth) + y];
-}
+Cell *DijkstraMaze::find_farthest_cell() {
+    Cell *farthest = nullptr;
 
-void DijkstraMaze::set(int x, int y, int value) {
-    mDistances[(x * mWidth) + y] = value;
-}
-
-void DijkstraMaze::calculate_r(int x, int y, int distance) {
-    set(x, y, distance);
-    if (mMaze->can_go_north(x, y) && get(x, y - 1) < 0) {
-        calculate_r(x, y - 1, distance + 1);
-    }
-    if (mMaze->can_go_east(x, y) && get(x + 1, y) < 0) {
-        calculate_r(x + 1, y, distance + 1);
-    }
-    if (mMaze->can_go_south(x, y) && get(x, y + 1) < 0) {
-        calculate_r(x, y + 1, distance + 1);
-    }
-    if (mMaze->can_go_west(x, y) && get(x - 1, y) < 0) {
-        calculate_r(x - 1, y, distance + 1);
-    }
-}
-
-void DijkstraMaze::calculate(int x, int y) {
-    calculate_r(x, y, 0);
-}
-
-int DijkstraMaze::distance(int x, int y) {
-    return get(x, y);
-}
-
-CellLocation DijkstraMaze::origin() {
-    CellLocation retval{0, 0};
-
-    for (int x = 0; x < mWidth; x++) {
-        for (int y = 0; y < mHeight; y++) {
-            if (get(x, y) == 0) {
-                retval.x = x;
-                retval.y = y;
+    for (auto rowp = mMaze->begin(); rowp < mMaze->end(); rowp++) {
+        for (auto cellp = rowp->begin(); cellp < rowp->end(); cellp++) {
+            Cell *cell = &(*cellp);
+            if (mDistances[cell] > mDistances[farthest]) {
+                farthest = cell;
             }
         }
     }
 
-    return retval;
+    return farthest;
 }
 
-CellDistance DijkstraMaze::farthest() {
-    CellDistance retval{0, 0, 0, 0, 0};
+void DijkstraMaze::calculate_r(Cell *cell, int distance) {
+    mDistances[cell] = distance;
 
-    for (int x = 0; x < mWidth; x++) {
-        for (int y = 0; y < mHeight; y++) {
-            int distance = get(x, y);
-            if (distance == 0) {
-                retval.xStart = x;
-                retval.yStart = y;
-            } else if (distance > retval.distance) {
-                retval.xEnd = x;
-                retval.yEnd = y;
-                retval.distance = distance;
-            }
-        }
+    if (cell->is_linked(cell->north()) && mDistances[cell->north()] < 0) {
+        calculate_r(cell->north(), distance + 1);
     }
-
-    return retval;
+    if (cell->is_linked(cell->east()) && mDistances[cell->east()] < 0) {
+        calculate_r(cell->east(), distance + 1);
+    }
+    if (cell->is_linked(cell->south()) && mDistances[cell->south()] < 0) {
+        calculate_r(cell->south(), distance + 1);
+    }
+    if (cell->is_linked(cell->west()) && mDistances[cell->west()] < 0) {
+        calculate_r(cell->west(), distance + 1);
+    }
 }
 
-void DijkstraMaze::longest_path() {
+void DijkstraMaze::calculate(Cell *cell) {
+    calculate_r(cell, 0);
+}
+
+void DijkstraMaze::calculate(int row, int column) {
+    calculate_r(mMaze->get(row, column), 0);
+}
+
+int DijkstraMaze::distance_to(Cell *cell) {
+    return mDistances[cell];
+}
+
+int DijkstraMaze::distance_to(int row, int column) {
+    return distance_to(mMaze->get(row, column));
+}
+
+void DijkstraMaze::calculate_longest_path() {
     calculate(0, 0);
-    CellDistance cd = farthest();
+    Cell *farthest = find_farthest_cell();
     reset();
-    calculate(cd.xEnd, cd.yEnd);
+    calculate(farthest);
+    farthest = find_farthest_cell();
+    mFarthestRow = farthest->row();
+    mFarthestColumn = farthest->column();
+}
+
+int DijkstraMaze::farthest_row() {
+    return mFarthestRow;
+}
+
+int DijkstraMaze::farthest_column() {
+    return mFarthestColumn;
 }
 
 std::ostream& operator<<(std::ostream& os, DijkstraMaze& dMaze) {
     Maze *maze = dMaze.maze();
     os << "\u250C";
-    for (int x = 0; x < maze->width(); x++) {
-        os << "\u2500\u2500\u2500\u2500";
-        os << (x == (maze->width() - 1) ? "\u2510" : "\u252C");
+    for (int column = 0; column < maze->columns(); column++) {
+        os << "\u2500\u2500\u2500\u2500\u2500";
+        os << (column == (maze->columns() - 1) ? "\u2510" : "\u252C");
     }
     os << "\n";
 
-    for (int y = 0; y < maze->height(); y++) {
+    for (int row = 0; row < maze->rows(); row++) {
         os << "\u2502";
-        for (int x = 0; x < maze->width(); x++) {
-            os << " " << std::setw(2) << dMaze.distance(x, y) << " ";
-            os << (maze->can_go_east(x, y) ? " " : "\u2502");
+        for (int column = 0; column < maze->columns(); column++) {
+            Cell *cell = maze->get(row, column);
+            os << " " << std::setw(3) << dMaze.distance_to(cell) << " ";
+            os << (cell->is_linked(cell->east()) ? " " : "\u2502");
         }
         os << "\n";
-        os << (y == (maze->height() - 1) ? "\u2514" : "\u251C");
-        for (int x = 0; x < maze->width(); x++) {
-            os << (maze->can_go_south(x, y) ? "    " : "\u2500\u2500\u2500\u2500");
-            if (y == (maze->height() - 1)) {
-                os << (x == (maze->width() - 1) ? "\u2518" : "\u2534");
+        os << (row == (maze->rows() - 1) ? "\u2514" : "\u251C");
+        for (int column = 0; column < maze->columns(); column++) {
+            Cell *cell = maze->get(row, column);
+            os << (cell->is_linked(cell->south()) ? "     " : "\u2500\u2500\u2500\u2500\u2500");
+            if (row == (maze->rows() - 1)) {
+                os << (row == (maze->columns() - 1) ? "\u2518" : "\u2534");
             } else {
-                os << (x == (maze->width() - 1) ? "\u2524" : "\u253C");
+                os << (row == (maze->columns() - 1) ? "\u2524" : "\u253C");
             }
         }
         os << "\n";

@@ -1,33 +1,42 @@
 
 #pragma once
 
+#include <map>
+#include <vector>
+
 class Cell {
 private:
+    int   mRow;
+    int   mColumn;
+
     Cell *mNorth;
     Cell *mEast;
     Cell *mSouth;
     Cell *mWest;
 
+    std::map<Cell*,bool> links;
+
 public:
     Cell();
+    Cell(int row, int column);
+
+    int row();
+    int column();
 
     Cell *north();
     Cell *east();
     Cell *south();
     Cell *west();
 
-    bool can_go_north();
-    bool can_go_east();
-    bool can_go_south();
-    bool can_go_west();
+    void set_north(Cell *cell);
+    void set_east(Cell *cell);
+    void set_south(Cell *cell);
+    void set_west(Cell *cell);
 
-    void connect_north(Cell *cell);
-    void connect_east(Cell *cell);
-    void connect_south(Cell *cell);
-    void connect_west(Cell *cell);
+    std::vector<Cell*> neighbors();
 
-    void disconnect_north();
-    void disconnect_east();
-    void disconnect_south();
-    void disconnect_west();
+    void link(Cell *cell, bool bidirectional = true);
+    void unlink(Cell *cell, bool bidirectional = true);
+    bool is_linked(Cell *cell);
+    std::vector<Cell*> linked_cells();
 };

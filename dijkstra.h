@@ -1,41 +1,33 @@
 
 #pragma once
 
+#include <map>
+
 #include "maze.h"
-
-struct CellDistance {
-    int xStart;
-    int yStart;
-    int xEnd;
-    int yEnd;
-    int distance;
-};
-
-struct CellLocation {
-    int x;
-    int y;
-};
 
 class DijkstraMaze {
 private:
-    int *mDistances;
-    int mWidth;
-    int mHeight;
     Maze *mMaze;
+    std::map<Cell*,int> mDistances;
+    int mRows;
+    int mColumns;
+    int mFarthestRow;
+    int mFarthestColumn;
 
-    int get(int x, int y);
-    void set(int x, int y, int value);
+    void calculate_r(Cell *cell, int value);
+    void reset();
+    Cell *find_farthest_cell();
 public:
     DijkstraMaze(Maze *maze);
     ~DijkstraMaze();
     Maze *maze();
-    void reset();
-    void calculate(int x, int y);
-    void calculate_r(int x, int y, int value);
-    int distance(int x, int y);
-    CellLocation origin();
-    CellDistance farthest();
-    void longest_path();
+    void calculate(Cell *cell);
+    void calculate(int row, int column);
+    int distance_to(Cell *cell);
+    int distance_to(int row, int column);
+    void calculate_longest_path();
+    int farthest_row();
+    int farthest_column();
 };
 
 std::ostream& operator<<(std::ostream& os, DijkstraMaze& dMaze);

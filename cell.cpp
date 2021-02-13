@@ -1,11 +1,30 @@
 
 #include "cell.h"
 
-Cell::Cell() {
-    mNorth = nullptr;
-    mSouth = nullptr;
-    mEast = nullptr;
-    mWest = nullptr;
+Cell::Cell() :
+    mRow{ -1 },
+    mColumn{ -1 },
+    mNorth{ nullptr },
+    mEast{ nullptr },
+    mSouth{ nullptr },
+    mWest{ nullptr }
+{}
+
+Cell::Cell(int row, int column) :
+    mRow{ row },
+    mColumn{ column },
+    mNorth{ nullptr },
+    mEast{ nullptr },
+    mSouth{ nullptr },
+    mWest{ nullptr }
+{}
+
+int Cell::row() {
+    return mRow;
+}
+
+int Cell::column() {
+    return mColumn;
 }
 
 Cell *Cell::north() {
@@ -24,87 +43,72 @@ Cell *Cell::west() {
     return mWest;
 }
 
-bool Cell::can_go_north() {
-    return mNorth != nullptr;
+void Cell::set_north(Cell *cell) {
+    mNorth = cell;
 }
 
-bool Cell::can_go_east() {
-    return mEast != nullptr;
+void Cell::set_east(Cell *cell) {
+    mEast = cell;
 }
 
-bool Cell::can_go_south() {
-    return mSouth != nullptr;
+void Cell::set_south(Cell *cell) {
+    mSouth = cell;
 }
 
-bool Cell::can_go_west() {
-    return mWest != nullptr;
+void Cell::set_west(Cell *cell) {
+    mWest = cell;
 }
 
-void Cell::connect_north(Cell *cell) {
-    if (mNorth != cell) {
-        mNorth = cell;
-        cell->connect_south(this);
-    }
-}
-
-void Cell::connect_east(Cell *cell) {
-    if (mEast != cell) {
-        mEast = cell;
-        cell->connect_west(this);
-    }
-}
-
-void Cell::connect_south(Cell *cell) {
-    if (mSouth != cell) {
-        mSouth = cell;
-        cell->connect_north(this);
-    }
-
-}
-
-void Cell::connect_west(Cell *cell) {
-    if (mWest != cell) {
-        mWest = cell;
-        cell->connect_east(this);
-    }
-}
-
-void Cell::disconnect_north() {
+std::vector<Cell*> Cell::neighbors() {
+    std::vector<Cell*> neighbors;
     if (mNorth != nullptr) {
-        Cell *cell = mNorth;
-        mNorth = nullptr;
-        if (cell->can_go_south()) {
-            cell->disconnect_south();
-        }
+        neighbors.push_back(mNorth);
     }
-}
-
-void Cell::disconnect_east() {
     if (mEast != nullptr) {
-        Cell *cell = mEast;
-        mEast = nullptr;
-        if (cell->can_go_west()) {
-            cell->disconnect_west();
-        }
+        neighbors.push_back(mEast);
     }
-}
-
-void Cell::disconnect_south() {
     if (mSouth != nullptr) {
-        Cell *cell = mSouth;
-        mSouth = nullptr;
-        if (cell->can_go_north()) {
-            cell->disconnect_north();
+        neighbors.push_back(mSouth);
+    }
+    if (mWest != nullptr) {
+        neighbors.push_back(mWest);
+    }
+
+    return neighbors;
+}
+
+void Cell::link(Cell *cell, bool bidirectional) {
+    if (cell != nullptr) {
+        links[cell] = true;
+        if (bidirectional) {
+            cell->link(this, false);
         }
     }
 }
 
-void Cell::disconnect_west() {
-    if (mWest != nullptr) {
-        Cell *cell = mWest;
-        mWest = nullptr;
-        if (cell->can_go_east()) {
-            cell->disconnect_east();
+void Cell::unlink(Cell *cell, bool bidirectional) {
+    if (cell != nullptr) {
+        links[cell] = false;
+        if (bidirectional) {
+            cell->unlink(this, false);
         }
     }
+}
+
+bool Cell::is_linked(Cell *cell) {
+    if (cell == nullptr) {
+        return false;
+    }
+
+    return links[cell];
+}
+
+std::vector<Cell*> Cell::linked_cells() {
+    std::vector<Cell*> linked;
+
+    for (auto pair : links) {
+        linked.push_back(pair.first);
+    }
+
+    return linked;
 }

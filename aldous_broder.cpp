@@ -1,64 +1,25 @@
 
 #include <cstdio>
 #include <random>
+#include <map>
 #include "aldous_broder.h"
 
 void build_aldousbroder_maze(Maze *maze) {
     std::random_device rnd{};
-    int width = maze->width();
-    int height = maze->height();
-    int x = (int)(rnd() % width);
-    int y = (int)(rnd() % height);
+    std::map<Cell*,bool> visited;
+    int maze_size = maze->rows() * maze->columns() - 1;
 
-    int unvisited = width * height;
-    bool visited[unvisited];
-    for (int i = 0; i < unvisited; i++) {
-        visited[i] = 0;
-    }
+    int row = (int)(rnd() % maze->rows());
+    int column = (int)(rnd() % maze->columns());
+    Cell *cell = maze->get(row, column);
 
-    while (unvisited > 0) {
-        short direction = (short)(rnd() % 4);
-        switch (direction) {
-        case 0: // north
-            if (y > 0) {
-                y--;
-                if (!visited[(x * width) + y]) {
-                    visited[(x * width) + y] = true;
-                    unvisited--;
-                    maze->add_path_south(x, y);
-                }
-            }
-            break;
-        case 1: // south
-            if (y < (height - 1)) {
-                y++;
-                if (!visited[(x * width) + y]) {
-                    visited[(x * width) + y] = true;
-                    unvisited--;
-                    maze->add_path_north(x, y);
-                }
-            }
-            break;
-        case 2: // east
-            if (x < (width - 1)) {
-                x++;
-                if (!visited[(x * width) + y]) {
-                    visited[(x * width) + y] = true;
-                    unvisited--;
-                    maze->add_path_west(x, y);
-                }
-            }
-            break;
-        case 3: // west
-            if (x > 0) {
-                x--;
-                if (!visited[(x * width) + y]) {
-                    visited[(x * width) + y] = true;
-                    unvisited--;
-                    maze->add_path_east(x, y);
-                }
-            }
-            break;
+    while ((int)visited.size() <= maze_size) {
+        std::vector<Cell*> neighbors = cell->neighbors();
+        Cell *neighbor = neighbors[(int)(rnd() % neighbors.size())];
+        if (!visited[neighbor]) {
+            cell->link(neighbor);
+            visited[neighbor] = true;
         }
+        cell = neighbor;
     }
 }

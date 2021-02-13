@@ -1,80 +1,93 @@
 
+#include <vector>
+
 #include "traverse.h"
 
-const unsigned short FaceN       = 1;
-const unsigned short FaceS       = 2;
-const unsigned short FaceE       = 4;
-const unsigned short FaceW       = 8;
+Traversal::Traversal(Maze *maze) :
+    mMaze{ maze }
+{}
 
-struct tcell {
-    int x;
-    int y;
-    unsigned short facing;
-};
-
-tcell turn_right(tcell loc) {
-    if (loc.facing == FaceN) {
-        loc.facing = FaceE;
-    } else if (loc.facing == FaceE) {
-        loc.facing = FaceS;
-    } else if (loc.facing == FaceS) {
-        loc.facing = FaceW;
-    } else {
-        loc.facing = FaceN;
-    }
-
-    return loc;
+void Traversal::reset() {
+    visited.clear();
 }
 
-bool can_move(Maze *maze, tcell loc) {
-    if (loc.facing == FaceE && maze->can_go_east(loc.x, loc.y) && !maze->visited(loc.x + 1, loc.y)) {
-        return true;
-    } else if (loc.facing == FaceW && maze->can_go_west(loc.x, loc.y) && !maze->visited(loc.x - 1, loc.y)) {
-        return true;
-    } else if (loc.facing == FaceS && maze->can_go_south(loc.x, loc.y) && !maze->visited(loc.x, loc.y + 1)) {
-        return true;
-    } else if (loc.facing == FaceN && maze->can_go_north(loc.x, loc.y) && !maze->visited(loc.x, loc.y - 1)) {
-        return true;
-    }
+void Traversal::traverse_r(Cell *cell) {
+    if (!visited[cell]) {
+        visited[cell] = true;
 
-    return false;
-}
-
-tcell move(tcell loc) {
-    if (loc.facing == FaceE) {
-        loc.x++;
-    } else if (loc.facing == FaceW) {
-        loc.x--;
-    } else if (loc.facing == FaceN) {
-        loc.y--;
-    } else if (loc.facing == FaceS) {
-        loc.y++;
-    }
-
-    return loc;
-}
-
-void traverse_r(Maze *maze, tcell loc) {
-    maze->visit(loc.x, loc.y);
-
-    tcell r_loc = turn_right(loc);
-    if (can_move(maze, r_loc)) {
-        traverse_r(maze, move(r_loc));
-    }
-    r_loc = turn_right(r_loc);
-    if (can_move(maze, r_loc)) {
-        traverse_r(maze, move(r_loc));
-    }
-    r_loc = turn_right(r_loc);
-    if (can_move(maze, r_loc)) {
-        traverse_r(maze, move(r_loc));
-    }
-
-    if (can_move(maze, loc)) {
-        traverse_r(maze, move(loc));
+        if (cell->is_linked(cell->north())) {
+            traverse_r(cell->north());
+        }
+        if (cell->is_linked(cell->east())) {
+            traverse_r(cell->east());
+        }
+        if (cell->is_linked(cell->south())) {
+            traverse_r(cell->south());
+        }
+        if (cell->is_linked(cell->west())) {
+            traverse_r(cell->west());
+        }
     }
 }
 
-void maze_traverse(Maze *maze) {
-    traverse_r(maze, tcell{0, 0, FaceE});
+void Traversal::traverse(int row, int column) {
+    traverse_r(mMaze->get(row, column));
+}
+
+Maze *Traversal::maze() {
+    return mMaze;
+}
+
+bool Traversal::is_visited(Cell *cell) {
+    if (cell == nullptr) {
+        return false;
+    }
+
+    return visited[cell];
+}
+
+bool Traversal::is_valid() {
+    for (auto rowp = mMaze->begin(); rowp < mMaze->end(); rowp++) {
+        for (auto cellp = rowp->begin(); cellp < rowp->end(); cellp++) {
+            if (!visited[&(*cellp)]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+std::ostream& operator<<(std::ostream& os, Traversal& traversal) {
+    Maze *maze = traversal.maze();
+
+    os << "\u250C";
+    for (int x = 0; x < maze->columns(); x++) {
+        os << "\u2500\u2500\u2500";
+        os << (x == (maze->columns() - 1) ? "\u2510" : "\u252C");
+    }
+    os << "\n";
+
+    for (int row = 0; row < maze->rows(); row++) {
+        os << "\u2502";
+        for (int column = 0; column < maze->columns(); column++) {
+            Cell *cell = maze->get(row, column);
+            os << " " << (traversal.is_visited(cell) ? "\u22C6" : " ") << " ";
+            os << (cell->is_linked(cell->east()) ? " " : "\u2502");
+        }
+        os << "\n";
+        os << (row == (maze->rows() - 1) ? "\u2514" : "\u251C");
+        for (int column = 0; column < maze->columns(); column++) {
+            Cell *cell = maze->get(row, column);
+            os << (cell->is_linked(cell->south()) ? "   " : "\u2500\u2500\u2500");
+            if (row == (maze->rows() - 1)) {
+                os << (row == (maze->columns() - 1) ? "\u2518" : "\u2534");
+            } else {
+                os << (row == (maze->columns() - 1) ? "\u2524" : "\u253C");
+            }
+        }
+        os << "\n";
+    }
+
+    return os;
 }

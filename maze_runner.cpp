@@ -7,6 +7,7 @@
 #include "sidewinder.h"
 #include "dijkstra.h"
 #include "traverse.h"
+#include "wilson.h"
 
 int run_test(std::string name, void (*builder)(Maze *)) {
     int failed = 0;
@@ -40,14 +41,17 @@ void run_tests() {
         failed += run_test("Binary tree",   build_bt_maze);
         failed += run_test("Sidewinder",    build_sidewinder_maze);
         failed += run_test("Aldous-Broder", build_aldousbroder_maze);
+        failed += run_test("Wilson",        build_wilson_maze);
+        std::cout << "."; std::cout.flush();
     }
+    std::cout << "\n";
     std::cout << "Testing complete.\n";
     std::cout << failed << " tests failed.\n";
 }
 
 void show_mazes() {
     Maze maze{30, 30};
-    build_aldousbroder_maze(&maze);
+    build_wilson_maze(&maze);
     Traversal traversal{&maze};
     traversal.traverse();
     std::cout << maze << "\n" << "Maze is" << (traversal.is_valid() ? "" : " not") << " valid.\n";

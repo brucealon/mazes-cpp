@@ -1,6 +1,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <cstdlib>
 #include "maze.h"
 #include "aldous_broder.h"
 #include "binary_tree.h"
@@ -57,7 +58,6 @@ void show_mazes() {
     std::cout << maze << "\n" << "Maze is" << (traversal.is_valid() ? "" : " not") << " valid.\n";
     DijkstraMaze dMaze{&maze};
     dMaze.calculate_longest_path();
-    std::cout << dMaze;
     std::cout << "Distance to 0, 0 = " << dMaze.distance_to(0, 0) << "\n";
     auto frow = dMaze.farthest_row();
     auto fcol = dMaze.farthest_column();
@@ -65,9 +65,11 @@ void show_mazes() {
 }
 
 int main(int argc, char **argv) {
-    show_mazes();
-    std::cout << "\n\n";
-    run_tests();
+    if (std::getenv("TEST")) {
+        run_tests();
+    } else {
+        show_mazes();
+    }
 
     return 0;
 }

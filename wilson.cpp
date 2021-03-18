@@ -4,7 +4,7 @@
 #include <vector>
 #include "wilson.h"
 
-std::random_device rnd{};
+static std::random_device rnd{};
 
 Cell *random_cell(std::vector<Cell*> cells) {
     int idx = (int)(rnd() % cells.size());

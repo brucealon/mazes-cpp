@@ -77,9 +77,48 @@ std::vector<Cell*> Cell::neighbors() {
     return neighbors;
 }
 
+std::vector<Cell*> Cell::unvisited_neighbors() {
+    std::vector<Cell*> neighbors;
+
+    if (north() && !north()->has_links()) neighbors.push_back(north());
+    if (south() && !south()->has_links()) neighbors.push_back(south());
+    if (east()  && !east()->has_links()) neighbors.push_back(east());
+    if (west()  && !west()->has_links()) neighbors.push_back(west());
+
+    return neighbors;
+}
+
+std::vector<Cell*> Cell::visited_neighbors() {
+    std::vector<Cell*> neighbors;
+
+    if (north() && north()->has_links()) neighbors.push_back(north());
+    if (south() && south()->has_links()) neighbors.push_back(south());
+    if (east()  && east()->has_links()) neighbors.push_back(east());
+    if (west()  && west()->has_links()) neighbors.push_back(west());
+
+    return neighbors;
+}
+
+bool Cell::has_visited_neighbors() {
+    if (north() && north()->has_links()) return true;
+    if (south() && south()->has_links()) return true;
+    if (east()  && east()->has_links()) return true;
+    if (west()  && west()->has_links()) return true;
+
+    return false;
+}
+
+bool Cell::visited() {
+    return has_links();
+}
+
+bool Cell::unvisited() {
+    return !has_links();
+}
+
 void Cell::link(Cell *cell, bool bidirectional) {
     if (cell != nullptr) {
-        links[cell] = true;
+        mLinks[cell] = true;
         if (bidirectional) {
             cell->link(this, false);
         }
@@ -88,7 +127,7 @@ void Cell::link(Cell *cell, bool bidirectional) {
 
 void Cell::unlink(Cell *cell, bool bidirectional) {
     if (cell != nullptr) {
-        links[cell] = false;
+        mLinks[cell] = false;
         if (bidirectional) {
             cell->unlink(this, false);
         }
@@ -100,13 +139,28 @@ bool Cell::is_linked(Cell *cell) {
         return false;
     }
 
-    return links[cell];
+    return mLinks[cell];
+}
+
+bool Cell::has_links() {
+    return !mLinks.empty();
+}
+
+int Cell::links() {
+    int count = 0;
+
+    if (mNorth && mLinks[mNorth]) count++;
+    if (mSouth && mLinks[mSouth]) count++;
+    if (mEast  && mLinks[mEast])  count++;
+    if (mWest  && mLinks[mWest])  count++;
+
+    return count;
 }
 
 std::vector<Cell*> Cell::linked_cells() {
     std::vector<Cell*> linked;
 
-    for (auto pair : links) {
+    for (auto pair : mLinks) {
         linked.push_back(pair.first);
     }
 

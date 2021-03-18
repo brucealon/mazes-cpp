@@ -7,6 +7,8 @@
 #include "binary_tree.h"
 #include "sidewinder.h"
 #include "dijkstra.h"
+#include "hunt_and_kill.h"
+#include "sidewinder.h"
 #include "traverse.h"
 #include "wilson.h"
 
@@ -52,7 +54,7 @@ void run_tests() {
 
 void show_mazes() {
     Maze maze{30, 30};
-    build_wilson_maze(&maze);
+    build_huntkill_maze(&maze);
     Traversal traversal{&maze};
     traversal.traverse();
     std::cout << maze << "\n" << "Maze is" << (traversal.is_valid() ? "" : " not") << " valid.\n";

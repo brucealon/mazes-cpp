@@ -14,7 +14,7 @@ private:
     Cell *mSouth;
     Cell *mWest;
 
-    std::map<Cell*,bool> links;
+    std::map<Cell*,bool> mLinks;
 
 public:
     Cell();
@@ -34,9 +34,17 @@ public:
     void set_west(Cell *cell);
 
     std::vector<Cell*> neighbors();
+    std::vector<Cell*> unvisited_neighbors();
+    std::vector<Cell*> visited_neighbors();
+    bool has_visited_neighbors();
+
+    bool visited();
+    bool unvisited();
 
     void link(Cell *cell, bool bidirectional = true);
     void unlink(Cell *cell, bool bidirectional = true);
     bool is_linked(Cell *cell);
+    bool has_links();
+    int links();
     std::vector<Cell*> linked_cells();
 };

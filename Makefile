@@ -19,5 +19,8 @@ run: maze_runner
 test: maze_runner
 	TEST=true ./maze_runner
 
+count: maze_runner
+	COUNT=true ./maze_runner
+
 valgrind: maze_runner
 	valgrind --track-origins=yes --leak-check=full -s ./maze_runner

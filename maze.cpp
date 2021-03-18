@@ -74,6 +74,21 @@ std::vector<std::vector<Cell>>::iterator Maze::end() {
     return mMaze.end();
 }
 
+int Maze::deadends() {
+    int count = 0;
+
+    for (auto rowp = begin(); rowp != end(); rowp++) {
+        for (auto cellp = rowp->begin(); cellp != rowp->end(); cellp++) {
+            Cell *cell = &(*cellp);
+            if (cell->links() == 1) {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
 std::ostream& operator<<(std::ostream& os, Maze& maze) {
     os << "\u250C";
     for (int column = 0; column < maze.columns(); column++) {

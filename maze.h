@@ -28,6 +28,8 @@ public:
 
     std::vector<std::vector<Cell>>::iterator begin();
     std::vector<std::vector<Cell>>::iterator end();
+
+    int deadends();
 };
 
 std::ostream& operator<<(std::ostream& os, Maze& maze);

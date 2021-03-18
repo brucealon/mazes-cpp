@@ -1,16 +1,25 @@
 
 #include <cstdio>
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
+#include <map>
 #include "maze.h"
 #include "aldous_broder.h"
 #include "binary_tree.h"
-#include "sidewinder.h"
 #include "dijkstra.h"
 #include "hunt_and_kill.h"
 #include "sidewinder.h"
 #include "traverse.h"
 #include "wilson.h"
+
+std::map<std::string, void (*)(Maze*)> algorithms =
+    {
+     {"Aldous-Broder", build_aldousbroder_maze},
+     {"Binary tree",   build_bt_maze},
+     {"Hunt and Kill", build_huntkill_maze},
+     {"Sidewinder",    build_sidewinder_maze},
+     {"Wilson",        build_wilson_maze}
+    };
 
 int run_test(std::string name, void (*builder)(Maze *)) {
     int failed = 0;
@@ -41,15 +50,30 @@ void run_tests() {
     std::cout << "Testing " << count << " iterations of each builder.\n";
 
     for (int x = 0; x < count; x++) {
-        failed += run_test("Binary tree",   build_bt_maze);
-        failed += run_test("Sidewinder",    build_sidewinder_maze);
-        failed += run_test("Aldous-Broder", build_aldousbroder_maze);
-        failed += run_test("Wilson",        build_wilson_maze);
+        for (auto elem : algorithms) {
+            failed += run_test(elem.first, elem.second);
+        }
         std::cout << "."; std::cout.flush();
     }
     std::cout << "\n";
     std::cout << "Testing complete.\n";
     std::cout << failed << " tests failed.\n";
+}
+
+int count_deadends(void (*builder)(Maze*)) {
+    Maze maze{30,30};
+    builder(&maze);
+    return maze.deadends();
+}
+
+void average_deadends(int iterations) {
+    for (auto elem : algorithms) {
+        int sum{0};
+        for (int idx = 0; idx < iterations; idx++) {
+            sum += count_deadends(elem.second);
+        }
+        std::cout << "Average dead ends for " << elem.first << " is " << (sum/iterations) << ".\n";
+    }
 }
 
 void show_mazes() {
@@ -69,6 +93,8 @@ void show_mazes() {
 int main(int argc, char **argv) {
     if (std::getenv("TEST")) {
         run_tests();
+    } else if (std::getenv("COUNT")) {
+        average_deadends(100);
     } else {
         show_mazes();
     }

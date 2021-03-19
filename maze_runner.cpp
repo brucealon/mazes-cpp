@@ -60,19 +60,24 @@ void run_tests() {
     std::cout << failed << " tests failed.\n";
 }
 
-int count_deadends(void (*builder)(Maze*)) {
-    Maze maze{30,30};
+int count_deadends(void (*builder)(Maze*), int w, int h) {
+    Maze maze{w, h};
     builder(&maze);
     return maze.deadends();
 }
 
 void average_deadends(int iterations) {
+    int w{30};
+    int h{30};
+
     for (auto elem : algorithms) {
         int sum{0};
         for (int idx = 0; idx < iterations; idx++) {
-            sum += count_deadends(elem.second);
+            sum += count_deadends(elem.second, w, h);
         }
-        std::cout << "Average dead ends for " << elem.first << " is " << (sum/iterations) << ".\n";
+        int avg = sum/iterations;
+        int pct = (int)(100 * ((float)avg / (float)(w * h)));
+        std::cout << "Average dead ends for " << elem.first << " is " << avg << " (" << pct << "%).\n";
     }
 }
 

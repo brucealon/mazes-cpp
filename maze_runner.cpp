@@ -8,17 +8,19 @@
 #include "binary_tree.h"
 #include "dijkstra.h"
 #include "hunt_and_kill.h"
+#include "recursive_backtrack.h"
 #include "sidewinder.h"
 #include "traverse.h"
 #include "wilson.h"
 
 std::map<std::string, void (*)(Maze*)> algorithms =
     {
-     {"Aldous-Broder", build_aldousbroder_maze},
-     {"Binary tree",   build_bt_maze},
-     {"Hunt and Kill", build_huntkill_maze},
-     {"Sidewinder",    build_sidewinder_maze},
-     {"Wilson",        build_wilson_maze}
+     {"Aldous-Broder",         build_aldousbroder_maze},
+     {"Binary tree",           build_bt_maze},
+     {"Hunt and Kill",         build_huntkill_maze},
+     {"Recursive Backtracker", build_rb_maze},
+     {"Sidewinder",            build_sidewinder_maze},
+     {"Wilson",                build_wilson_maze}
     };
 
 int run_test(std::string name, void (*builder)(Maze *)) {
@@ -83,7 +85,7 @@ void average_deadends(int iterations) {
 
 void show_mazes() {
     Maze maze{30, 30};
-    build_huntkill_maze(&maze);
+    build_rb_maze(&maze);
     Traversal traversal{&maze};
     traversal.traverse();
     std::cout << maze << "\n" << "Maze is" << (traversal.is_valid() ? "" : " not") << " valid.\n";

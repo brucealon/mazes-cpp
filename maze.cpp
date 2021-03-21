@@ -90,7 +90,12 @@ int Maze::deadends() {
 }
 
 std::ostream& operator<<(std::ostream& os, Maze& maze) {
-    os << "\u250C";
+    os << "   ";
+    for (int column = 0; column < maze.columns(); column++) {
+        os << std::setw(4) << column;
+    }
+    os << "\n";
+    os << "   \u250C";
     for (int column = 0; column < maze.columns(); column++) {
         os << "\u2500\u2500\u2500";
         os << (column == (maze.columns() - 1) ? "\u2510" : "\u252C");
@@ -98,14 +103,14 @@ std::ostream& operator<<(std::ostream& os, Maze& maze) {
     os << "\n";
 
     for (int row = 0; row < maze.rows(); row++) {
-        os << "\u2502";
+        os << std::setw(3) << row << "\u2502";
         for (int column = 0; column < maze.columns(); column++) {
             Cell *cell = maze.get(row, column);
             os << "   ";
             os << (cell->is_linked(cell->east()) ? " " : "\u2502");
         }
         os << "\n";
-        os << (row == (maze.rows() - 1) ? "\u2514" : "\u251C");
+        os << "   " << (row == (maze.rows() - 1) ? "\u2514" : "\u251C");
         for (int column = 0; column < maze.columns(); column++) {
             Cell *cell = maze.get(row, column);
             os << (cell->is_linked(cell->south()) ? "   " : "\u2500\u2500\u2500");

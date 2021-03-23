@@ -31,6 +31,7 @@ void Traversal::traverse_r(Cell *cell) {
 }
 
 void Traversal::traverse(int row, int column) {
+    reset();
     traverse_r(mMaze->get(row, column));
 }
 

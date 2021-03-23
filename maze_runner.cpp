@@ -36,7 +36,6 @@ int run_test(std::string name, void (*builder)(Maze *)) {
         failed++;
     }
     maze.block_cell(5, 5);
-    traversal.reset();
     traversal.traverse();
     if (traversal.is_valid()) {
         std::cout << name << " maze should not be valid but is.\n" << traversal << "\n";

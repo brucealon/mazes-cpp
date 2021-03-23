@@ -23,10 +23,10 @@ std::map<std::string, void (*)(Maze*)> algorithms =
      {"Wilson",                build_wilson_maze}
     };
 
-int run_test(std::string name, void (*builder)(Maze *)) {
+int run_test(int rows, int columns, std::string name, void (*builder)(Maze *)) {
     int failed = 0;
 
-    Maze maze{30, 30};
+    Maze maze{rows, columns};
     builder(&maze);
     Traversal traversal{&maze};
 
@@ -45,14 +45,13 @@ int run_test(std::string name, void (*builder)(Maze *)) {
     return failed;
 }
 
-void run_tests() {
+void run_tests(int rows, int columns, int iterations) {
     int failed = 0;
-    int count = 100;
-    std::cout << "Testing " << count << " iterations of each builder.\n";
+    std::cout << "Testing " << iterations << " iterations of each builder.\n";
 
-    for (int x = 0; x < count; x++) {
+    for (int x = 0; x < iterations; x++) {
         for (auto elem : algorithms) {
-            failed += run_test(elem.first, elem.second);
+            failed += run_test(rows, columns, elem.first, elem.second);
         }
         std::cout << "."; std::cout.flush();
     }
@@ -67,9 +66,9 @@ int count_deadends(void (*builder)(Maze*), int w, int h) {
     return maze.deadends();
 }
 
-void average_deadends(int iterations) {
-    int w{30};
-    int h{30};
+void average_deadends(int rows, int columns, int iterations) {
+    int w{rows};
+    int h{columns};
 
     for (auto elem : algorithms) {
         int sum{0};
@@ -82,6 +81,21 @@ void average_deadends(int iterations) {
     }
 }
 
+void average_distances(int rows, int columns, int iterations) {
+    for (auto elem : algorithms) {
+        int sum{0};
+        for (int idx = 0; idx < iterations; idx++) {
+            Maze maze{rows, columns};
+            elem.second(&maze);
+            DijkstraMaze dMaze{&maze};
+            dMaze.calculate_longest_path();
+            sum += dMaze.longest_path();
+        }
+        int avg = sum/iterations;
+        std::cout << "Average distance for " << elem.first << " is " << avg << ".\n";
+    }
+}
+
 void show_mazes() {
     Maze maze{30, 30};
     build_rb_maze(&maze);
@@ -90,17 +104,27 @@ void show_mazes() {
     std::cout << maze << "\n" << "Maze is" << (traversal.is_valid() ? "" : " not") << " valid.\n";
     DijkstraMaze dMaze{&maze};
     dMaze.calculate_longest_path();
+    Cell *origin = dMaze.origin_cell();
+    std::printf("Origin is now %d, %d\n", origin->row(), origin->column());
     std::cout << "Distance to 0, 0 = " << dMaze.distance_to(0, 0) << "\n";
-    auto frow = dMaze.farthest_row();
-    auto fcol = dMaze.farthest_column();
-    std::printf("Farthest cell is %d, %d at a distance of %d\n", frow, fcol, dMaze.distance_to(frow, fcol));
+    Cell *farthest = dMaze.farthest_cell();
+    std::printf("Farthest cell is %d, %d at a distance of %d\n",
+                farthest->row(),
+                farthest->column(),
+                dMaze.distance_to(farthest));
 }
 
 int main(int argc, char **argv) {
+    int iterations = 100;
+    int rows = 30;
+    int columns = 30;
+
     if (std::getenv("TEST")) {
-        run_tests();
+        run_tests(rows, columns, iterations);
     } else if (std::getenv("COUNT")) {
-        average_deadends(100);
+        average_deadends(rows, columns, iterations);
+    } else if (std::getenv("DISTANCE")) {
+        average_distances(rows, columns, iterations);
     } else {
         show_mazes();
     }

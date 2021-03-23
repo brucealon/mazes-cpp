@@ -22,5 +22,8 @@ test: maze_runner
 count: maze_runner
 	COUNT=true ./maze_runner
 
+distance: maze_runner
+	DISTANCE=true ./maze_runner
+
 valgrind: maze_runner
 	valgrind --track-origins=yes --leak-check=full -s ./maze_runner

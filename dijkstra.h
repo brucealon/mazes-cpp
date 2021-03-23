@@ -9,12 +9,8 @@ class DijkstraMaze {
 private:
     Maze *mMaze;
     std::map<Cell*,int> mDistances;
-    int mRows;
-    int mColumns;
-    int mStartRow;
-    int mStartColumn;
-    int mFarthestRow;
-    int mFarthestColumn;
+    Cell *mOrigin;
+    Cell *mFarthest;
 
     void calculate_r(Cell *cell, int value);
     void reset();
@@ -27,11 +23,10 @@ public:
     void calculate(int row, int column);
     int distance_to(Cell *cell);
     int distance_to(int row, int column);
+    int longest_path();
     void calculate_longest_path();
-    int start_row();
-    int start_column();
-    int farthest_row();
-    int farthest_column();
+    Cell *origin_cell();
+    Cell *farthest_cell();
 };
 
 std::ostream& operator<<(std::ostream& os, DijkstraMaze& dMaze);

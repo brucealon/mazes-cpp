@@ -4,13 +4,7 @@
 #include "dijkstra.h"
 
 DijkstraMaze::DijkstraMaze(Maze *maze) :
-    mMaze{ maze },
-    mRows{ maze->rows() },
-    mColumns{ maze->columns() },
-    mStartRow{ -1 },
-    mStartColumn{ -1 },
-    mFarthestRow{ -1 },
-    mFarthestColumn{ -1 }
+    mMaze{ maze }
 {
     reset();
 }
@@ -31,23 +25,21 @@ void DijkstraMaze::reset() {
             mDistances[&(*cellp)] = -1;
         }
     }
-    mFarthestRow = -1;
-    mFarthestColumn = -1;
 }
 
 Cell *DijkstraMaze::find_farthest_cell() {
-    Cell *farthest = nullptr;
+    mFarthest = nullptr;
 
     for (auto rowp = mMaze->begin(); rowp < mMaze->end(); rowp++) {
         for (auto cellp = rowp->begin(); cellp < rowp->end(); cellp++) {
             Cell *cell = &(*cellp);
-            if (mDistances[cell] > mDistances[farthest]) {
-                farthest = cell;
+            if (mDistances[cell] > mDistances[mFarthest]) {
+                mFarthest = cell;
             }
         }
     }
 
-    return farthest;
+    return mFarthest;
 }
 
 void DijkstraMaze::calculate_r(Cell *cell, int distance) {
@@ -83,32 +75,24 @@ int DijkstraMaze::distance_to(int row, int column) {
     return distance_to(mMaze->get(row, column));
 }
 
+int DijkstraMaze::longest_path() {
+    return mDistances[mFarthest];
+}
+
 void DijkstraMaze::calculate_longest_path() {
     calculate(0, 0);
-    Cell *farthest = find_farthest_cell();
+    mOrigin = find_farthest_cell();
     reset();
-    calculate(farthest);
-    mStartRow = farthest->row();
-    mStartColumn = farthest->column();
-    farthest = find_farthest_cell();
-    mFarthestRow = farthest->row();
-    mFarthestColumn = farthest->column();
+    calculate(mOrigin);
+    mFarthest = find_farthest_cell();
 }
 
-int DijkstraMaze::start_row() {
-    return mStartRow;
+Cell *DijkstraMaze::origin_cell() {
+    return mOrigin;
 }
 
-int DijkstraMaze::start_column() {
-    return mStartColumn;
-}
-
-int DijkstraMaze::farthest_row() {
-    return mFarthestRow;
-}
-
-int DijkstraMaze::farthest_column() {
-    return mFarthestColumn;
+Cell *DijkstraMaze::farthest_cell() {
+    return mFarthest;
 }
 
 std::ostream& operator<<(std::ostream& os, DijkstraMaze& dMaze) {

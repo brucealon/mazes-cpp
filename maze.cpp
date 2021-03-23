@@ -1,11 +1,13 @@
 
+#include <iomanip>
 #include <iostream>
 
 #include "maze.h"
 
 Maze::Maze(int rows, int columns) :
     mRows{ rows },
-    mColumns{ columns }
+    mColumns{ columns },
+    mRnd{}
 {
     initialize();
 }
@@ -40,6 +42,12 @@ Cell *Maze::get(int row, int column) {
     }
 
     return nullptr;
+}
+
+Cell *Maze::random_cell() {
+    std::vector<int>::size_type row = mRnd() % mRows;
+    std::vector<int>::size_type column = mRnd() % mColumns;
+    return &mMaze[row][column];
 }
 
 void Maze::block_cell(int row, int column) {

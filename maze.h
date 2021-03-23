@@ -2,6 +2,7 @@
 #pragma once
 
 #include <iostream>
+#include <random>
 #include <vector>
 
 #include "cell.h"
@@ -11,6 +12,7 @@ private:
     int mRows;
     int mColumns;
     std::vector<std::vector<Cell>> mMaze;
+    std::random_device mRnd;
 
     void initialize();
 
@@ -22,6 +24,7 @@ public:
     int columns();
 
     Cell *get(int row, int column);
+    Cell *random_cell();
     void block_cell(int row, int column);
 
     void reset();

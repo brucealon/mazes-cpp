@@ -15,7 +15,5 @@ void build_maze(Cell *cell) {
 }
 
 void build_rb_maze(Maze *maze) {
-    int row = (int)(rnd() % maze->rows());
-    int column = (int)(rnd() % maze->columns());
-    build_maze(maze->get(row, column));
+    build_maze(maze->random_cell());
 }

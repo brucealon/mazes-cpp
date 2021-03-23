@@ -24,9 +24,7 @@ Cell *hunt(Maze *maze) {
 }
 
 void build_huntkill_maze(Maze *maze) {
-    int row = (int)(rnd() % maze->rows());
-    int column = (int)(rnd() % maze->columns());
-    Cell *cell = maze->get(row, column);
+    Cell *cell = maze->random_cell();
 
     while (cell) {
         auto neighbors = cell->unvisited_neighbors();

@@ -9,9 +9,7 @@ void build_aldousbroder_maze(Maze *maze) {
     std::map<Cell*,bool> visited;
     int maze_size = maze->rows() * maze->columns() - 1;
 
-    int row = (int)(rnd() % maze->rows());
-    int column = (int)(rnd() % maze->columns());
-    Cell *cell = maze->get(row, column);
+    Cell *cell = maze->random_cell();
 
     while ((int)visited.size() <= maze_size) {
         std::vector<Cell*> neighbors = cell->neighbors();

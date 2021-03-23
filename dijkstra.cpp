@@ -7,6 +7,8 @@ DijkstraMaze::DijkstraMaze(Maze *maze) :
     mMaze{ maze },
     mRows{ maze->rows() },
     mColumns{ maze->columns() },
+    mStartRow{ -1 },
+    mStartColumn{ -1 },
     mFarthestRow{ -1 },
     mFarthestColumn{ -1 }
 {
@@ -86,9 +88,19 @@ void DijkstraMaze::calculate_longest_path() {
     Cell *farthest = find_farthest_cell();
     reset();
     calculate(farthest);
+    mStartRow = farthest->row();
+    mStartColumn = farthest->column();
     farthest = find_farthest_cell();
     mFarthestRow = farthest->row();
     mFarthestColumn = farthest->column();
+}
+
+int DijkstraMaze::start_row() {
+    return mStartRow;
+}
+
+int DijkstraMaze::start_column() {
+    return mStartColumn;
 }
 
 int DijkstraMaze::farthest_row() {

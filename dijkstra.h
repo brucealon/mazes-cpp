@@ -11,6 +11,8 @@ private:
     std::map<Cell*,int> mDistances;
     int mRows;
     int mColumns;
+    int mStartRow;
+    int mStartColumn;
     int mFarthestRow;
     int mFarthestColumn;
 
@@ -26,6 +28,8 @@ public:
     int distance_to(Cell *cell);
     int distance_to(int row, int column);
     void calculate_longest_path();
+    int start_row();
+    int start_column();
     int farthest_row();
     int farthest_column();
 };
